@@ -23,7 +23,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: $fantosyyy/hello-angular
+          images: fantosyyy/hello-angular
 
       # This builds the image using your Dockerfile and pushes it
       - name: Build and push
