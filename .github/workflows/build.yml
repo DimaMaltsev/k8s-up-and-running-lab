@@ -1,24 +1,35 @@
-name: Build
+name: Build and Push to Docker Hub
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
+      # Login using the secrets you created in GitHub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: fantosyyy
+          password: ${{ secrets.dockerhub }}
 
-    - name: Install dependencies
-      run: npm ci
+      # This extracts tags (like 'latest') automatically
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: $fantosyyy/hello-angular
 
-    - name: Build
-      run: npm run build
+      # This builds the image using your Dockerfile and pushes it
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
