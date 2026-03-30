@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-angular-service
+spec:
+  selector:
+    app: hello-angular
+  ports:
+    - protocol: TCP
+      port: 80         # The port the Service exposes
+      targetPort: 80   # The port your container is listening on
+  type: ClusterIP
