@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "main" ]
 
+# 1. ADDED: We need write permissions to push the updated deployment.yaml back to GitHub
+permissions:
+  contents: write
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -35,3 +39,18 @@ jobs:
             fantosyyy/hello-angular:main
             fantosyyy/hello-angular:v${{ github.run_number }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      # 2. ADDED: Find the line in deployment.yaml and replace the tag with the current run number
+      - name: Update deployment.yaml with new image tag
+        run: |
+          sed -i "s|image: fantosyyy/hello-angular:.*|image: fantosyyy/hello-angular:v${{ github.run_number }}|g" deployment.yaml
+
+      # 3. ADDED: Commit the updated file and push it back to the repository
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add deployment.yaml
+          # We only commit if there are actual changes to avoid failing the pipeline
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update deployment image tag to v${{ github.run_number }}"
+          git push
