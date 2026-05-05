@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: hello-angular
-        image: fantosyyy/hello-angular:v14
+        image: fantosyyy/hello-angular:v15
         imagePullPolicy: Always
         ports:
         - containerPort: 80 # Assuming the application listens on port 80
